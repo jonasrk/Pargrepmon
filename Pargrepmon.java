@@ -31,9 +31,12 @@ class Pargrepmon{
 		    reader2.read(chars2);
 		    content2 = new String(chars2);
 		    reader2.close();
-	   
-			Thread t = new GrepThread(parts, content2, myList);
-			t.start();
+			
+			int processors = Runtime.getRuntime().availableProcessors();
+			for(int i=0; i < processors; i++) {
+				Thread t = new GrepThread(parts, content2, myList, i);
+				t.start();
+			}
 	   
 			System.out.println("myList is " + myList.toString());
 		
@@ -62,15 +65,18 @@ class GrepThread extends Thread{
 	String[] parts;
 	String content2;
 	List<Wordcount> myList;
+	int thread_id;
 	
-	public GrepThread(String[] parts, String content2, List<Wordcount> myList) {
+	public GrepThread(String[] parts, String content2, List<Wordcount> myList, int thread_id) {
 	       this.parts = parts;
 		   this.content2 = content2;
 		   this.myList = myList;
+		   this.thread_id = thread_id;
 	   }
 	
 	@Override public void run(){
 		System.out.println("In GrepThread");
+		System.out.println("Thread " + thread_id + " here!");
 	        // get string to search for
 	        // look for the string in buffer
 			
