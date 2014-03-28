@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
+import java.lang.Thread;
 
 class Pargrepmon{
 	
@@ -31,7 +32,8 @@ class Pargrepmon{
 		    content2 = new String(chars2);
 		    reader2.close();
 	   
-			lookforit();
+			Thread t = new GrepThread(parts, content2, myList);
+			t.start();
 	   
 		
 		
@@ -54,13 +56,26 @@ class Pargrepmon{
 	
 	}
 	
-	static void lookforit() {
-		System.out.println("In lookforit");
+}
+	
+class GrepThread extends Thread{
+	String[] parts;
+	String content2;
+	List<Wordcount> myList;
+	
+	public GrepThread(String[] parts, String content2, List<Wordcount> myList) {
+	       this.parts = parts;
+		   this.content2 = content2;
+		   this.myList = myList;
+	   }
+	
+	@Override public void run(){
+		System.out.println("In GrepThread");
 	        // get string to search for
 	        // look for the string in buffer
 			
 			for (int i = 0; i < parts.length; i++){
-				System.out.println("In lookforit - part: " + parts[i]);
+				System.out.println("In GrepThread - part: " + parts[i]);
 				Pattern pattern = Pattern.compile(parts[i]);
 				Matcher matcher = pattern.matcher(content2);
 				Wordcount this_wordcount = new Wordcount();
