@@ -35,7 +35,7 @@ class Pargrepmon{
 			Thread t = new GrepThread(parts, content2, myList);
 			t.start();
 	   
-		
+			System.out.println("myList is " + myList.toString());
 		
 		PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
 		
