@@ -39,6 +39,8 @@ class Pargrepmon{
 	       e.printStackTrace();
 	   }
 	   
+	   List<Wordcount> myList = new ArrayList<Wordcount>();
+	   
 	    for (int i = 0; i < parts.length; i++){
 	   		Pattern pattern = Pattern.compile(parts[i]);
 	   		Matcher matcher = pattern.matcher(content2);
@@ -47,6 +49,7 @@ class Pargrepmon{
 	   		
 	   		while (matcher.find()) {
 	   		    System.out.println(pattern + " +1");
+				
 	   		}
 	   		
 	   	}
@@ -54,4 +57,9 @@ class Pargrepmon{
 	
 	}
 
+}
+
+class Wordcount {
+  public String word;
+  public int count;
 }
