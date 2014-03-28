@@ -48,14 +48,25 @@ class Pargrepmon{
 	   		System.out.println("Current parts[i] " + parts[i]);
 			Wordcount this_wordcount = new Wordcount();
 			this_wordcount.word = parts[i];
+			this_wordcount.count = 0;
 	   		
 	   		while (matcher.find()) {
-				
+				this_wordcount.count++;
 	   		    System.out.println(pattern + " +1");
 				
 	   		}
+			
+			myList.add(this_wordcount);
 	   		
 	   	}
+		
+		
+		System.out.println("My list is " + myList.toString());
+		
+		for(Wordcount this_wordcount : myList) //use for-each loop
+		{
+		    System.out.println(this_wordcount.word + ";" + this_wordcount.count);
+		}
 		
 	
 	}
