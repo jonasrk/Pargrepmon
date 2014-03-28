@@ -46,8 +46,11 @@ class Pargrepmon{
 	   		Matcher matcher = pattern.matcher(content2);
 	   		
 	   		System.out.println("Current parts[i] " + parts[i]);
+			Wordcount this_wordcount = new Wordcount();
+			this_wordcount.word = parts[i];
 	   		
 	   		while (matcher.find()) {
+				
 	   		    System.out.println(pattern + " +1");
 				
 	   		}
