@@ -3,12 +3,17 @@ import java.util.*;
 import java.util.regex.*;
 
 class Pargrepmon{
+	
+	static String[] parts = new String[1];
+	
+    static String content = null;
+	static String content2 = null;
+	
+	static List<Wordcount> myList = new ArrayList<Wordcount>();
 
 	public static void main(String[] args){
 		
-		String[] parts = new String[4];
 		
-	    String content = null;
 	    File file = new File(args[0]);
 	    try {
 	        FileReader reader = new FileReader(file);
@@ -18,7 +23,7 @@ class Pargrepmon{
 			reader.close();
 	    
 		
-		String content2 = null;
+		
 		File file2 = new File(args[1]);
 		FileReader reader2 = new FileReader(file2);
 		    char[] chars2 = new char[(int) file2.length()];
@@ -26,29 +31,18 @@ class Pargrepmon{
 		    content2 = new String(chars2);
 		    reader2.close();
 	   
-		List<Wordcount> myList = new ArrayList<Wordcount>();
+			lookforit();
 	   
-		for (int i = 0; i < parts.length; i++){
-			Pattern pattern = Pattern.compile(parts[i]);
-			Matcher matcher = pattern.matcher(content2);
-			Wordcount this_wordcount = new Wordcount();
-			this_wordcount.word = parts[i];
-			this_wordcount.count = 0;
-			
-			while (matcher.find()) {
-				this_wordcount.count++;
-			    
-			}
-			
-			myList.add(this_wordcount);
-			
-		}
+		
 		
 		PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
 		
 		for(Wordcount this_wordcount : myList)
 		{
+			System.out.println("writing " + this_wordcount.word + " to file");
 		    writer.println(this_wordcount.word + ";" + this_wordcount.count);
+			System.out.println("wrote " + this_wordcount.count);
+			
 		}
 		
 		writer.close();
@@ -58,6 +52,31 @@ class Pargrepmon{
     }
 		
 	
+	}
+	
+	static void lookforit() {
+		System.out.println("In lookforit");
+	        // get string to search for
+	        // look for the string in buffer
+			
+			for (int i = 0; i < parts.length; i++){
+				System.out.println("In lookforit - part: " + parts[i]);
+				Pattern pattern = Pattern.compile(parts[i]);
+				Matcher matcher = pattern.matcher(content2);
+				Wordcount this_wordcount = new Wordcount();
+				this_wordcount.word = parts[i];
+				this_wordcount.count = 0;
+			
+				while (matcher.find()) {
+					this_wordcount.count++;
+			    
+				}
+			
+				myList.add(this_wordcount);
+			
+			}
+			
+	        // write string to result list
 	}
 
 }
