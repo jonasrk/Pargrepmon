@@ -7,8 +7,7 @@ class CentralClass{
 	String[] search_strings;
 	String second_input_string;
 	List<Wordcount> output_list;
-	int number_of_processors;
-	int current_search_string_number = 0;
+	int number_of_processors, current_search_string_number = 0;
 	boolean list_in_use, current_num_in_use = false;
 	
 	public CentralClass(String[] search_strings, String second_input_string, List<Wordcount> output_list, int number_of_processors){
