@@ -95,14 +95,9 @@ class CentralClass{
         // get string to search for
 		String current_search_string;
 		while((current_search_string = getStringToSearchFor()) != "END_STRING"){
-        // look for the string in buffer
-		Pattern pattern = Pattern.compile(current_search_string);
-		Matcher matcher = pattern.matcher(second_input_string);
-		Wordcount this_wordcount = new Wordcount();
-		this_wordcount.word = current_search_string;
-		this_wordcount.count = 0;
-		while ( matcher.find() ) {
-			this_wordcount.count++;}
+        
+		// look for the string in buffer
+		Wordcount this_wordcount = lookForTheStringInBuffer(current_search_string);
 			
 		// write string to result list
 		writeStringToResultList(this_wordcount);
@@ -119,6 +114,17 @@ class CentralClass{
 	
 	synchronized void writeStringToResultList(Wordcount this_wordcount){
 		output_list.add(this_wordcount);
+	}
+	
+	Wordcount lookForTheStringInBuffer(String current_search_string){
+		Wordcount this_wordcount = new Wordcount();
+		Pattern pattern = Pattern.compile(current_search_string);
+		Matcher matcher = pattern.matcher(second_input_string);
+		this_wordcount.word = current_search_string;
+		this_wordcount.count = 0;
+		while ( matcher.find() ) {
+			this_wordcount.count++;}
+		return this_wordcount;
 	}
 }
 
