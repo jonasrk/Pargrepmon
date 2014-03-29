@@ -14,9 +14,10 @@ class Pargrepmon{
 
 	public static void main(String[] args){
 		
-		
+		//Read input
 	    File file = new File(args[0]);
 	    try {
+			try{
 	        FileReader reader = new FileReader(file);
 	        char[] chars = new char[(int) file.length()];
 	        reader.read(chars);
@@ -33,11 +34,21 @@ class Pargrepmon{
 		    reader2.close();
 			
 			int processors = Runtime.getRuntime().availableProcessors();
+			
+			//Spawn threads and grep
+			CentralClass centralclass = new CentralClass(parts, content2, myList, processors);
+			Thread[] t = new Thread[processors];
+			
 			for(int i=0; i < processors; i++) {
-				Thread t = new GrepThread(parts, content2, myList, i, processors);
-				t.start();
+				t[i] = new GrepThread(centralclass, i);
+				t[i].start();
 			}
-	   
+			
+			for(int i=0; i < processors; i++) {
+				t[i].join();
+			}
+			
+	   	 	//generate output	
 			System.out.println("myList is " + myList.toString());
 		
 		PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
@@ -52,6 +63,12 @@ class Pargrepmon{
 		
 		writer.close();
 		
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+		
+		
+		
     } catch (IOException e) {
         e.printStackTrace();
     }
@@ -62,48 +79,63 @@ class Pargrepmon{
 }
 	
 class GrepThread extends Thread{
-	String[] parts;
-	String content2;
-	List<Wordcount> myList;
-	int thread_id, processors;
 	
-	public GrepThread(String[] parts, String content2, List<Wordcount> myList, int thread_id, int processors) {
-	       this.parts = parts;
-		   this.content2 = content2;
-		   this.myList = myList;
+	int thread_id;
+	CentralClass centralClass;
+	
+	public GrepThread(CentralClass centralClass, int thread_id) {
+	       this.centralClass = centralClass;
 		   this.thread_id = thread_id;
-		   this.processors = processors;
 	   }
 	
 	@Override public void run(){
-		System.out.println("In GrepThread");
-		System.out.println("Thread " + thread_id + " here!");
-	        // get string to search for
-	        // look for the string in buffer
-			
-			for (int i = 0; i < parts.length; i++){
-				
-				if (i%processors == thread_id){
-				
-				System.out.println("In GrepThread - part: " + parts[i]);
-				Pattern pattern = Pattern.compile(parts[i]);
-				Matcher matcher = pattern.matcher(content2);
-				Wordcount this_wordcount = new Wordcount();
-				this_wordcount.word = parts[i];
-				this_wordcount.count = 0;
-			
-				while (matcher.find()) {
-					this_wordcount.count++;
-			    
-				}
-			
-				myList.add(this_wordcount);
-			
-			}}
-			
-	        // write string to result list
+		centralClass.lookforit(thread_id);
 	}
 
+}
+
+class CentralClass{
+	
+	String[] parts;
+	String content2;
+	List<Wordcount> myList;
+	boolean list_in_use = false;
+	int processors;
+	
+	public CentralClass(String[] parts, String content2, List<Wordcount> myList, int processors){
+		this.parts = parts;
+		this.content2 = content2;
+		this.myList = myList;
+		this.processors = processors;
+	}
+    
+	synchronized void lookforit(int thread_id){
+        // get string to search for
+        // look for the string in buffer
+		
+		for (int i = 0; i < parts.length; i++){
+			
+			if (i%processors == thread_id){
+			
+			System.out.println("In GrepThread " + thread_id + " - part: " + parts[i]);
+			Pattern pattern = Pattern.compile(parts[i]);
+			Matcher matcher = pattern.matcher(content2);
+			Wordcount this_wordcount = new Wordcount();
+			this_wordcount.word = parts[i];
+			this_wordcount.count = 0;
+		
+			while (matcher.find()) {
+				System.out.println("In GrepThread " + thread_id + "FOUND: " + this_wordcount.word);
+				this_wordcount.count++;
+		    
+			}
+			
+			myList.add(this_wordcount);
+		
+		}}
+		
+        // write string to result list
+    }
 }
 
 class Wordcount {
