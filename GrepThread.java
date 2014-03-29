@@ -9,11 +9,7 @@ class GrepThread extends Thread{
 	
 	public GrepThread(CentralClass centralClass, int thread_id) {
 	       this.centralClass = centralClass;
-		   this.thread_id = thread_id;
-	   }
+		   this.thread_id = thread_id;}
 	
 	@Override public void run(){
-		centralClass.lookforit(thread_id);
-	}
-
-}
+		centralClass.lookforit(thread_id);}}
