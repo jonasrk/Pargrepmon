@@ -4,41 +4,40 @@ import java.util.regex.*;
 import java.lang.Thread;
 
 class Pargrepmon{
-	static String[] search_strings = new String[1];
-	static String first_input_string = null;
-	static String second_input_string = null;
-	static List<Wordcount> output_list = new ArrayList<Wordcount>();
-
 	public static void main(String[] args){
-		//Read input
+		String[] search_strings = new String[1];
+		String first_input_string = null;
+		String second_input_string = null;
+		List<Wordcount> output_list = new ArrayList<Wordcount>();
+		
+		//Read input and detect number of cpus
 	    File first_input_file = new File(args[0]);
 	    try{
 		try{
 	    FileReader reader = new FileReader(first_input_file);
-	    char[] chars = new char[(int) first_input_file.length()];
-	    reader.read(chars);
-	    search_strings = (new String(chars)).split("\\s+");
+	    char[] first_file_char_array = new char[(int) first_input_file.length()];
+	    reader.read(first_file_char_array);
+	    search_strings = (new String(first_file_char_array)).split("\\s+");
 		reader.close();
 	    
 		File first_input_file2 = new File(args[1]);
 		FileReader reader2 = new FileReader(first_input_file2);
-		char[] chars2 = new char[(int) first_input_file2.length()];
-		reader2.read(chars2);
-		second_input_string = new String(chars2);
+		char[] second_file_char_array = new char[(int) first_input_file2.length()];
+		reader2.read(second_file_char_array);
+		second_input_string = new String(second_file_char_array);
 		reader2.close();
 		
-		int processors = Runtime.getRuntime().availableProcessors();
+		int number_of_processors = Runtime.getRuntime().availableProcessors();
 		
 		//Spawn threads and grep
-		CentralClass centralclass = new CentralClass(search_strings, second_input_string, output_list, processors);
-		Thread[] t = new Thread[processors];
-		
-		for(int i=0; i < processors; i++) {
+		CentralClass centralclass = new CentralClass(search_strings, second_input_string, output_list, number_of_processors);
+		Thread[] t = new Thread[number_of_processors];
+		for(int i=0; i < number_of_processors; i++) {
 			t[i] = new GrepThread(centralclass, i);
 			t[i].start();
 		}
 		
-		for(int i=0; i < processors; i++) {
+		for(int i=0; i < number_of_processors; i++) {
 			t[i].join();
 		}
 		
@@ -90,13 +89,13 @@ class CentralClass{
 	String second_input_string;
 	List<Wordcount> output_list;
 	boolean list_in_use = false;
-	int processors;
+	int number_of_processors;
 	
-	public CentralClass(String[] search_strings, String second_input_string, List<Wordcount> output_list, int processors){
+	public CentralClass(String[] search_strings, String second_input_string, List<Wordcount> output_list, int number_of_processors){
 		this.search_strings = search_strings;
 		this.second_input_string = second_input_string;
 		this.output_list = output_list;
-		this.processors = processors;
+		this.number_of_processors = number_of_processors;
 	}
     
 	synchronized void lookforit(int thread_id){
@@ -105,7 +104,7 @@ class CentralClass{
 		
 		for (int i = 0; i < search_strings.length; i++){
 			
-			if (i%processors == thread_id){
+			if (i%number_of_processors == thread_id){
 			
 			System.out.println("In GrepThread " + thread_id + " - part: " + search_strings[i]);
 			Pattern pattern = Pattern.compile(search_strings[i]);
