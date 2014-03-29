@@ -4,17 +4,13 @@ import java.util.regex.*;
 import java.lang.Thread;
 
 class Pargrepmon{
-	public static void main(String[] args){
-	    try{
-		try{
-			
+	public static void main(String[] args){try{try{
 		String[] search_strings = new String[1];
 		String second_input_string = null;
 		List<Wordcount> output_list = new ArrayList<Wordcount>();
 		
 		//Read input and detect number of cpus
 	    File first_input_file = new File(args[0]);
-
 		FileReader first_file_reader = new FileReader(first_input_file);
 	    char[] first_file_char_array = new char[(int) first_input_file.length()];
 	    first_file_reader.read(first_file_char_array);
@@ -35,28 +31,14 @@ class Pargrepmon{
 		Thread[] t = new Thread[number_of_processors];
 		for(int i=0; i < number_of_processors; i++) {
 			t[i] = new GrepThread(centralclass, i);
-			t[i].start();
-		}
-		
+			t[i].start();}
 		for(int i=0; i < number_of_processors; i++) {
-			t[i].join();
-		}
+			t[i].join();}
 		
 	   	//generate output	
 		PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
-		for(Wordcount this_wordcount : output_list)
-		{
-			writer.println(this_wordcount.word + ";" + this_wordcount.count);
-		}
+		for(Wordcount this_wordcount : output_list){
+			writer.println(this_wordcount.word + ";" + this_wordcount.count);}
 		writer.close();
 		
-    	} catch (InterruptedException e) {
-        e.printStackTrace();
-    	}
-		} catch (IOException e) {
-        e.printStackTrace();
-    	}
-	
-	}
-	
-}
+    	} catch (InterruptedException e) {e.printStackTrace();}} catch (IOException e) {e.printStackTrace();}}}
