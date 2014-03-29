@@ -83,6 +83,7 @@ class CentralClass{
 	List<Wordcount> output_list;
 	int number_of_processors;
 	int current_search_string_number = 0;
+	boolean list_in_use = false; //probably unnecessary
 	
 	public CentralClass(String[] search_strings, String second_input_string, List<Wordcount> output_list, int number_of_processors){
 		this.search_strings = search_strings;
@@ -100,20 +101,14 @@ class CentralClass{
 		Wordcount this_wordcount = lookForTheStringInBuffer(current_search_string);
 			
 		// write string to result list
-		writeStringToResultList(this_wordcount);
+		writeStringToResultList(this_wordcount);}}
 		
-		}}
-		
-	synchronized String getStringToSearchFor(){
+	String getStringToSearchFor(){
 		if (current_search_string_number < search_strings.length){
 			current_search_string_number++;
 			return search_strings[current_search_string_number-1];
 		}
 		else return "END_STRING";
-	}
-	
-	synchronized void writeStringToResultList(Wordcount this_wordcount){
-		output_list.add(this_wordcount);
 	}
 	
 	Wordcount lookForTheStringInBuffer(String current_search_string){
@@ -125,6 +120,14 @@ class CentralClass{
 		while ( matcher.find() ) {
 			this_wordcount.count++;}
 		return this_wordcount;
+	}
+	
+	void writeStringToResultList(Wordcount this_wordcount){
+		//while (list_in_use){try {this.wait();} catch(InterruptedException e){e.printStackTrace();}}
+		//list_in_use = true;
+		output_list.add(this_wordcount);
+		//list_in_use = false;
+		//this.notify();
 	}
 }
 
