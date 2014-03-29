@@ -93,35 +93,32 @@ class CentralClass{
     
 	void lookforit(int thread_id){
         // get string to search for
-        // look for the string in buffer
 		String current_search_string;
 		while((current_search_string = getStringToSearchFor()) != "END_STRING"){
-		
+        // look for the string in buffer
 		Pattern pattern = Pattern.compile(current_search_string);
 		Matcher matcher = pattern.matcher(second_input_string);
 		Wordcount this_wordcount = new Wordcount();
 		this_wordcount.word = current_search_string;
 		this_wordcount.count = 0;
-		
-		while (matcher.find()) {
-			System.out.println("In GrepThread " + thread_id + "FOUND: " + this_wordcount.word);
-			this_wordcount.count++;
-		
-		}
-		
-		output_list.add(this_wordcount);
+		while ( matcher.find() ) {
+			this_wordcount.count++;}
+			
+		// write string to result list
+		writeStringToResultList(this_wordcount);
 		
 		}}
 		
-        // write string to result list
-    
-	
 	synchronized String getStringToSearchFor(){
 		if (current_search_string_number < search_strings.length){
 			current_search_string_number++;
 			return search_strings[current_search_string_number-1];
 		}
 		else return "END_STRING";
+	}
+	
+	synchronized void writeStringToResultList(Wordcount this_wordcount){
+		output_list.add(this_wordcount);
 	}
 }
 
