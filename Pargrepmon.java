@@ -5,27 +5,28 @@ import java.lang.Thread;
 
 class Pargrepmon{
 	public static void main(String[] args){
+	    try{
+		try{
+			
 		String[] search_strings = new String[1];
-		String first_input_string = null;
 		String second_input_string = null;
 		List<Wordcount> output_list = new ArrayList<Wordcount>();
 		
 		//Read input and detect number of cpus
 	    File first_input_file = new File(args[0]);
-	    try{
-		try{
-	    FileReader reader = new FileReader(first_input_file);
+
+		FileReader first_file_reader = new FileReader(first_input_file);
 	    char[] first_file_char_array = new char[(int) first_input_file.length()];
-	    reader.read(first_file_char_array);
+	    first_file_reader.read(first_file_char_array);
 	    search_strings = (new String(first_file_char_array)).split("\\s+");
-		reader.close();
+		first_file_reader.close();
 	    
 		File first_input_file2 = new File(args[1]);
-		FileReader reader2 = new FileReader(first_input_file2);
+		FileReader second_file_reader = new FileReader(first_input_file2);
 		char[] second_file_char_array = new char[(int) first_input_file2.length()];
-		reader2.read(second_file_char_array);
+		second_file_reader.read(second_file_char_array);
 		second_input_string = new String(second_file_char_array);
-		reader2.close();
+		second_file_reader.close();
 		
 		int number_of_processors = Runtime.getRuntime().availableProcessors();
 		
@@ -42,18 +43,11 @@ class Pargrepmon{
 		}
 		
 	   	//generate output	
-		System.out.println("output_list is " + output_list.toString());
-		
 		PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
-		
 		for(Wordcount this_wordcount : output_list)
 		{
-			System.out.println("writing " + this_wordcount.word + " to first_input_file");
-		    writer.println(this_wordcount.word + ";" + this_wordcount.count);
-			System.out.println("wrote " + this_wordcount.count);
-			
+			writer.println(this_wordcount.word + ";" + this_wordcount.count);
 		}
-		
 		writer.close();
 		
     	} catch (InterruptedException e) {
@@ -68,7 +62,6 @@ class Pargrepmon{
 }
 	
 class GrepThread extends Thread{
-	
 	int thread_id;
 	CentralClass centralClass;
 	
@@ -88,8 +81,8 @@ class CentralClass{
 	String[] search_strings;
 	String second_input_string;
 	List<Wordcount> output_list;
-	boolean list_in_use = false;
 	int number_of_processors;
+	int current_search_string_number = 0;
 	
 	public CentralClass(String[] search_strings, String second_input_string, List<Wordcount> output_list, int number_of_processors){
 		this.search_strings = search_strings;
@@ -98,33 +91,38 @@ class CentralClass{
 		this.number_of_processors = number_of_processors;
 	}
     
-	synchronized void lookforit(int thread_id){
+	void lookforit(int thread_id){
         // get string to search for
         // look for the string in buffer
+		String current_search_string;
+		while((current_search_string = getStringToSearchFor()) != "END_STRING"){
 		
-		for (int i = 0; i < search_strings.length; i++){
-			
-			if (i%number_of_processors == thread_id){
-			
-			System.out.println("In GrepThread " + thread_id + " - part: " + search_strings[i]);
-			Pattern pattern = Pattern.compile(search_strings[i]);
-			Matcher matcher = pattern.matcher(second_input_string);
-			Wordcount this_wordcount = new Wordcount();
-			this_wordcount.word = search_strings[i];
-			this_wordcount.count = 0;
+		Pattern pattern = Pattern.compile(current_search_string);
+		Matcher matcher = pattern.matcher(second_input_string);
+		Wordcount this_wordcount = new Wordcount();
+		this_wordcount.word = current_search_string;
+		this_wordcount.count = 0;
 		
-			while (matcher.find()) {
-				System.out.println("In GrepThread " + thread_id + "FOUND: " + this_wordcount.word);
-				this_wordcount.count++;
-		    
-			}
-			
-			output_list.add(this_wordcount);
+		while (matcher.find()) {
+			System.out.println("In GrepThread " + thread_id + "FOUND: " + this_wordcount.word);
+			this_wordcount.count++;
+		
+		}
+		
+		output_list.add(this_wordcount);
 		
 		}}
 		
         // write string to result list
-    }
+    
+	
+	synchronized String getStringToSearchFor(){
+		if (current_search_string_number < search_strings.length){
+			current_search_string_number++;
+			return search_strings[current_search_string_number-1];
+		}
+		else return "END_STRING";
+	}
 }
 
 class Wordcount {
